@@ -3,6 +3,10 @@ setlocal EnableDelayedExpansion
 
 set "str=abcdef"
 call :KSA %str%
+set i=0
+set j=0
+
+call :PRGA
 
 goto:eof
 
@@ -24,7 +28,23 @@ goto:eof
 			for %%h in (arr%%i) do (set %%h = !arr%%z!)
 		)
 	)
-	call :printarr
+goto:eof
+
+:PRGA
+	set /A i=!i! + 1
+	set /A i=!i! %% 256
+	for %%h in (!i!) do (set /A j=!j! + !arr%%h!)
+	set /A j=!j! %% 256
+	
+	for %%a in (!i!) do (
+		set tempswap=!arr%%a!
+		for %%z in (!j!) do (
+			for %%h in (arr%%z) do (set %%h=!tempswap!)
+			for %%h in (arr%%a) do (set %%h = !arr%%z!)
+		)
+	)
+	
+	
 goto:eof
 
 :initarr
