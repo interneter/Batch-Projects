@@ -5,6 +5,7 @@ set "key=abcdef"
 set "plaintext=abcdef"
 
 call :KSA %key%
+call :printarr
 set i=0
 set j=0
 
@@ -24,13 +25,13 @@ if not "%tmp%" == "%strterm%" goto loop
 goto:eof
 
 :KSA
-	call :strlen %~1
 	set "str=%~1"
+	call :strlen %~1
 	
 	set j=0
 	call :initarr
 	for /l %%i in (0,1,256) do @(
-		Set /a keyindex = %%i %% !len!
+		set /a keyindex = %%i %% !len!
 		for %%z in (!keyindex!) do (call :toasciivalue !str:~%%z,1!)
 		set /A j=!j!+%%i+!asciival!
 		set /A j=!j! %% 256
@@ -94,11 +95,9 @@ goto:eof
 goto:eof
 
 :strlen
-	set len=0
-	echo %~1 > %temp%\tmp24921.TMP
-	for /f "tokens=4 delims= " %%a in ('dir %temp%\tmp24921.TMP^|findstr tmp24921.TMP') do (
-		set len=%%a> NUL
-	)
-	del /a %temp%\tmp24921.TMP
-	set /A len=%len%-4
+	set #=%~1
+	set length=0
+	:stringLengthLoop
+	if defined # (set #=%#:~1%&set /A length += 1&goto stringLengthLoop)
+	set "len=%length%"
 goto:eof
