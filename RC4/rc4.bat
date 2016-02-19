@@ -1,12 +1,26 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set "str=abcdef"
-call :KSA %str%
+set "key=abcdef"
+set "plaintext=abcdef"
+
+call :KSA %key%
 set i=0
 set j=0
 
-call :PRGA
+set strterm=___ENDOFSTRING___
+set tmp=%plaintext%%strterm%
+
+:loop
+	set char=%tmp:~0,1%
+
+	call :PRGA
+	call :ord %char%
+
+	set /a res=!k!^!code!
+	
+	set tmp=%tmp:~1%
+if not "%tmp%" == "%strterm%" goto loop
 
 goto:eof
 
@@ -47,6 +61,21 @@ goto:eof
 		)
 	)
 	
+goto:eof
+
+:ord
+	set code=0
+	if [%~1] EQU [] goto END
+	 
+	set input=%1
+	:: get first character of the input
+	set target=%input:~0,1%
+	 
+		for /L %%i in (32, 1, 126) do (
+			cmd /c exit /b %%i
+			set Chr=^!=ExitCodeAscii!
+			if [^!Chr!] EQU [^!target!] set code=%%i & goto:eof
+		)
 goto:eof
 
 :initarr
