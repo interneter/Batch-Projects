@@ -30,10 +30,12 @@ goto:eof
 	
 	set j=0
 	call :initarr
-	for /l %%i in (0,1,256) do @(
+	for /l %%i in (0,1,255) do @(
 		set /a keyindex = %%i %% !len!
 		for %%z in (!keyindex!) do (call :toasciivalue !str:~%%z,1!)
-		set /A j=!j!+%%i+!asciival!
+		
+		set si=!arr%%i!
+		set /A j=!j!+!si!+!asciival!
 		set /A j=!j! %% 256
 		
 		set tempswap=!arr%%i!
