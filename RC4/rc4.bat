@@ -41,9 +41,11 @@ goto:eof
 		for %%z in (!j!) do (
 			for %%h in (arr%%z) do (set %%h=!tempswap!)
 			for %%h in (arr%%a) do (set %%h = !arr%%z!)
+			set /A k=!arr%%z! + !arr%%a!
+			set /A k=!k! %% 256
+			for %%h in (!k!) do (set k=!arr%%h!)
 		)
 	)
-	
 	
 goto:eof
 
