@@ -16,9 +16,10 @@ set tmp=%plaintext%%strterm%
 
 	call :PRGA
 	call :ord %char%
-
-	set /a res=!k!^!code!
-	
+	@echo on
+	set /a "res=!k!^!code!"
+	echo !res!
+	@echo off
 	set tmp=%tmp:~1%
 if not "%tmp%" == "%strterm%" goto loop
 
