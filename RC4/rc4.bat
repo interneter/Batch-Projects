@@ -18,7 +18,7 @@ set tmp=%plaintext%%strterm%
 	call :PRGA
 	call :ord %char%
 	for %%h in (!k!) do (for %%r in (!code!) do (set /a "res=%%h^%%r") )
-	echo !res!
+	::echo !res!
 	set tmp=%tmp:~1%
 if not "%tmp%" == "%strterm%" goto loop
 
@@ -40,8 +40,8 @@ goto:eof
 		
 		set tempswap=!arr%%i!
 		for %%z in (!j!) do (
+			for %%h in (arr%%i) do (set %%h=!arr%%z!)
 			for %%h in (arr%%z) do (set %%h=!tempswap!)
-			for %%h in (arr%%i) do (set %%h = !arr%%z!)
 		)
 	)
 goto:eof
@@ -55,8 +55,8 @@ goto:eof
 	for %%a in (!i!) do (
 		set tempswap=!arr%%a!
 		for %%z in (!j!) do (
-			for %%h in (arr%%z) do (set %%h=!tempswap!)
 			for %%h in (arr%%a) do (set %%h = !arr%%z!)
+			for %%h in (arr%%z) do (set %%h=!tempswap!)
 			set /A k=!arr%%z! + !arr%%a!
 			set /A k=!k! %% 256
 			for %%h in (!k!) do (set k=!arr%%h!)
