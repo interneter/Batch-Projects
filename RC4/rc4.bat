@@ -5,7 +5,6 @@ set "key=abcdef"
 set "plaintext=abcdef"
 
 call :KSA %key%
-call :printarr
 set i=0
 set j=0
 
@@ -14,11 +13,11 @@ set tmp=%plaintext%%strterm%
 
 :loop
 	set char=%tmp:~0,1%
-
+	
 	call :PRGA
 	call :ord %char%
 	for %%h in (!k!) do (for %%r in (!code!) do (set /a "res=%%h^%%r") )
-	::echo !res!
+	echo !res!
 	set tmp=%tmp:~1%
 if not "%tmp%" == "%strterm%" goto loop
 
@@ -55,7 +54,7 @@ goto:eof
 	for %%a in (!i!) do (
 		set tempswap=!arr%%a!
 		for %%z in (!j!) do (
-			for %%h in (arr%%a) do (set %%h = !arr%%z!)
+			for %%h in (arr%%a) do (set %%h=!arr%%z!)
 			for %%h in (arr%%z) do (set %%h=!tempswap!)
 			set /A k=!arr%%z! + !arr%%a!
 			set /A k=!k! %% 256
@@ -70,7 +69,6 @@ goto:eof
 	if [%~1] EQU [] goto END
 	 
 	set input=%1
-	:: get first character of the input
 	set target=%input:~0,1%
 	 
 		for /L %%i in (32, 1, 126) do (
@@ -82,10 +80,6 @@ goto:eof
 
 :initarr
 	for /l %%x in (0,1,255) do (set arr%%x=%%x)
-goto:eof
-
-:printarr
-	for /l %%x in (0,1,255) do (echo !arr%%x!)
 goto:eof
 
 :toasciivalue
