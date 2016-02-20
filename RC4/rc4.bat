@@ -4,6 +4,9 @@ setlocal EnableDelayedExpansion
 set LF=^
 
 
+call :hexprint "0x20" space
+call :hexprint "0x09" tab
+	
 set "key=abcdef"
 set "plaintext=abcdef abcdef"
 
@@ -13,6 +16,7 @@ set j=0
 
 set strterm=___ENDOFSTRING___
 set tmp=%plaintext%%strterm%
+set encrypted=
 
 :loop
 	set char=%tmp:~0,1%
@@ -20,10 +24,12 @@ set tmp=%plaintext%%strterm%
 	call :PRGA
 	call :ord "%char%"
 	for %%h in (!k!) do (for %%r in (!code!) do (set /a "res=%%h^%%r") )
-	echo !res!
+	call :tohex !res!
+	call :strlen !PREFIX!!HEXSTR!
+	if !len! EQU 1 (set encrypted=!encrypted!0!PREFIX!!HEXSTR!) ELSE (set encrypted=!encrypted!!PREFIX!!HEXSTR!)
 	set tmp=%tmp:~1%
 if not "%tmp%" == "%strterm%" goto loop
-
+echo !encrypted!
 goto:eof
 
 :KSA
@@ -68,8 +74,6 @@ goto:eof
 
 :ord
 	set code=0
-	call :hexprint "0x20" space
-	call :hexprint "0x09" tab
 	set quotationmark="
 	
 	set input=%1
@@ -103,3 +107,16 @@ goto:eof
 	if defined # (set #=%#:~1%&set /A length += 1&goto stringLengthLoop)
 	set "len=%length%"
 goto:eof
+
+:tohex
+	set LOOKUP=0123456789abcdef 
+	set HEXSTR=
+	set PREFIX=
+	if "%1"=="" goto :EOF
+	set /a A=%* || exit /b 1
+	if !A! LSS 0 set /a A=0xfffffff + !A! + 1 & set PREFIX=f
+	:loophex
+	set /a B=!A! %% 16 & set /a A=!A! / 16
+	set HEXSTR=!LOOKUP:~%B%,1!%HEXSTR%
+	if %A% GTR 0 goto :loophex
+goto :EOF
