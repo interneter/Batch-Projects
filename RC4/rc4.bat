@@ -1,8 +1,11 @@
 @echo off
 setlocal EnableDelayedExpansion
 
+set LF=^
+
+
 set "key=abcdef"
-set "plaintext=abcdef"
+set "plaintext=abcdef abcdef"
 
 call :KSA %key%
 set i=0
@@ -15,7 +18,7 @@ set tmp=%plaintext%%strterm%
 	set char=%tmp:~0,1%
 	
 	call :PRGA
-	call :ord %char%
+	call :ord "%char%"
 	for %%h in (!k!) do (for %%r in (!code!) do (set /a "res=%%h^%%r") )
 	echo !res!
 	set tmp=%tmp:~1%
@@ -31,7 +34,7 @@ goto:eof
 	call :initarr
 	for /l %%i in (0,1,255) do @(
 		set /a keyindex = %%i %% !len!
-		for %%z in (!keyindex!) do (call :ord !str:~%%z,1!)
+		for %%z in (!keyindex!) do (call :ord "!str:~%%z,1!")
 		
 		set si=!arr%%i!
 		set /A j=!j!+!si!+!code!
@@ -65,16 +68,28 @@ goto:eof
 
 :ord
 	set code=0
-	if [%~1] EQU [] goto END
-	 
+	call :hexprint "0x20" space
+	call :hexprint "0x09" tab
+	set quotationmark="
+	
 	set input=%1
-	set target=%input:~0,1%
+	set target=%input:~1,1%
+	
+	if !quotationmark! == !target! set code=34 & goto:eof
+	if "%~1" == "%space%" set code=32 & goto:eof
+	if "%~1" == "%tab%" set code=9 & goto:eof
 	 
-		for /L %%i in (32, 1, 126) do (
-			cmd /c exit /b %%i
-			set Chr=^!=ExitCodeAscii!
-			if [^!Chr!] EQU [^!target!] set code=%%i & goto:eof
-		)
+	for /L %%i in (32, 1, 126) do (
+		cmd /c exit /b %%i
+		set Chr=^!=ExitCodeAscii!
+		if [^!Chr!] EQU [^!target!] set code=%%i & goto:eof
+	)
+goto:eof
+
+:hexPrint  string  [rtnVar]
+  for /f eol^=^%LF%%LF%^ delims^= %%A in (
+    'forfiles /p "%~dp0." /m "%~nx0" /c "cmd /c echo(%~1"'
+  ) do if "%~2" neq "" (set %~2=%%A) else echo(%%A
 goto:eof
 
 :initarr
