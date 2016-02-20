@@ -31,10 +31,10 @@ goto:eof
 	call :initarr
 	for /l %%i in (0,1,255) do @(
 		set /a keyindex = %%i %% !len!
-		for %%z in (!keyindex!) do (call :toasciivalue !str:~%%z,1!)
+		for %%z in (!keyindex!) do (call :ord !str:~%%z,1!)
 		
 		set si=!arr%%i!
-		set /A j=!j!+!si!+!asciival!
+		set /A j=!j!+!si!+!code!
 		set /A j=!j! %% 256
 		
 		set tempswap=!arr%%i!
@@ -61,7 +61,6 @@ goto:eof
 			for %%h in (!k!) do (set k=!arr%%h!)
 		)
 	)
-	
 goto:eof
 
 :ord
@@ -80,14 +79,6 @@ goto:eof
 
 :initarr
 	for /l %%x in (0,1,255) do (set arr%%x=%%x)
-goto:eof
-
-:toasciivalue
-	set asciival=0
-	for /L %%a in (33,1,126) do (
-		cmd /c exit %%a
-		if "!=exitcodeAscii!"=="%~1" set "asciival=%%a"
-	)
 goto:eof
 
 :strlen
